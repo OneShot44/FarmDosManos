@@ -1,0 +1,258 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+   Name = "Age Of Heroes Farm",
+   Icon = 0,
+   LoadingTitle = "Jooj interface",
+   LoadingSubtitle = "by jooj",
+   ShowText = "Rayfield",
+   Theme = "Default",
+
+   ToggleUIKeybind = "K",
+
+   DisableRayfieldPrompts = false,
+   DisableBuildWarnings = false,
+
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil,
+      FileName = "Big Hub"
+   },
+
+   Discord = {
+      Enabled = false,
+      Invite = "noinvitelink",
+      RememberJoins = true
+   },
+
+   KeySystem = false,
+   KeySettings = {
+      Title = "Untitled",
+      Subtitle = "Key System",
+      Note = "No method of obtaining the key is provided",
+      FileName = "Key",
+      SaveKey = true,
+      GrabKeyFromSite = false,
+      Key = {"Hello"}
+   }
+})
+
+local MainTab = Window:CreateTab("Scripts", 4483362458)
+MainTab:CreateSection("Farming")
+
+Rayfield:Notify({
+   Title = "So kaspa kaspa",
+   Content = "Script dos mano",
+   Duration = 4.5,
+})
+
+---------------------------------------------------
+-- SERVICES
+---------------------------------------------------
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local VirtualUser = game:GetService("VirtualUser")
+
+local player = Players.LocalPlayer
+
+---------------------------------------------------
+-- ANTI AFK COM NOTIFICAÇÃO
+---------------------------------------------------
+
+local VirtualUser = game:GetService("VirtualUser")
+
+player.Idled:Connect(function()
+	VirtualUser:CaptureController()
+	VirtualUser:ClickButton2(Vector2.new(0,0))
+end)
+
+Rayfield:Notify({
+	Title = "Anti-AFK",
+	Content = "Anti Idle Ativado!",
+	Duration = 4,
+})
+
+---------------------------------------------------
+-- TELEPORT SYSTEM
+---------------------------------------------------
+
+MainTab:CreateSection("Teleport System")
+
+local targetCFrame = CFrame.new(1453, 97.7080002, -2506)
+local teleportConnection
+
+MainTab:CreateToggle({
+   Name = "Infinite Teleport",
+   CurrentValue = false,
+   Flag = "InfiniteTeleport",
+   Callback = function(Value)
+
+      if Value then
+         teleportConnection = RunService.Heartbeat:Connect(function()
+            local character = player.Character
+            if character then
+               local hrp = character:FindFirstChild("HumanoidRootPart")
+               if hrp then
+                  hrp.CFrame = targetCFrame
+               end
+            end
+         end)
+
+         Rayfield:Notify({
+            Title = "Teleport",
+            Content = "Teleport Ativado!",
+            Duration = 3,
+         })
+
+      else
+         if teleportConnection then
+            teleportConnection:Disconnect()
+            teleportConnection = nil
+         end
+
+         Rayfield:Notify({
+            Title = "Teleport",
+            Content = "Teleport Desativado!",
+            Duration = 3,
+         })
+      end
+   end,
+})
+
+---------------------------------------------------
+-- AUTO RAPID PUNCH
+---------------------------------------------------
+
+MainTab:CreateSection("Combat System")
+
+local PunchEvent = ReplicatedStorage:WaitForChild("Events"):WaitForChild("Punch")
+
+local punchRunning = false
+local punchDelay = 3 -- mínimo 3 segundos
+
+local function spamPunch()
+	for i = 1, 10 do
+		PunchEvent:FireServer(0, 0.1, 1)
+	end
+end
+
+-- SLIDER (3 a 30 segundos)
+MainTab:CreateSlider({
+	Name = "Punch Delay",
+	Range = {3, 30},
+	Increment = 1,
+	Suffix = "Seconds",
+	CurrentValue = 3,
+	Flag = "RapidPunchDelay",
+	Callback = function(Value)
+		punchDelay = Value
+	end,
+})
+
+-- TOGGLE AUTO PUNCH
+MainTab:CreateToggle({
+	Name = "Auto Rapid Punch",
+	CurrentValue = false,
+	Flag = "AutoRapidPunch",
+	Callback = function(Value)
+
+		punchRunning = Value
+
+		if punchRunning then
+			task.spawn(function()
+				while punchRunning do
+					spamPunch()
+					task.wait(punchDelay)
+				end
+			end)
+
+			Rayfield:Notify({
+				Title = "Combat",
+				Content = "Auto Rapid Punch Ativado!",
+				Duration = 3,
+			})
+		else
+			Rayfield:Notify({
+				Title = "Combat",
+				Content = "Auto Rapid Punch Desativado!",
+				Duration = 3,
+			})
+		end
+	end,
+})
+
+---------------------------------------------------
+-- AUTO UPGRADE SYSTEM (FAST + INPUT)
+---------------------------------------------------
+
+MainTab:CreateSection("Auto Upgrade")
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UpgradeEvent = ReplicatedStorage:WaitForChild("Events"):WaitForChild("UpgradeAbility")
+
+local selectedAbility = "energy"
+local selectedPoints = 1
+
+-- DROPDOWN PARA ESCOLHER HABILIDADE
+MainTab:CreateDropdown({
+	Name = "Select Ability",
+	Options = {"energy","healing","speed","flight","swinging","telekinesis","vitality","metalSkin"},
+	CurrentOption = {"energy"},
+	MultipleOptions = false,
+	Flag = "AbilitySelect",
+	Callback = function(Options)
+		selectedAbility = Options[1]
+	end,
+})
+
+-- INPUT PARA DIGITAR QUANTIDADE
+MainTab:CreateInput({
+	Name = "Amount of Points",
+	CurrentValue = "",
+	PlaceholderText = "Type exact amount (ex: 50000)",
+	RemoveTextAfterFocusLost = false,
+	Flag = "PointsInput",
+	Callback = function(Text)
+		selectedPoints = tonumber(Text) or 1
+	end,
+})
+
+-- FUNÇÃO SUPER RÁPIDA (EM BATCH)
+local function upgradeAbilityFast(abilityName, totalIncrements)
+	local incrementsPerRequest = 5000
+	local remaining = totalIncrements
+
+	while remaining > 0 do
+		local batch = math.min(incrementsPerRequest, remaining)
+
+		for i = 1, batch do
+			task.spawn(function()
+				UpgradeEvent:InvokeServer(abilityName)
+			end)
+		end
+
+		remaining -= batch
+		task.wait() -- pequena pausa pra não crashar
+	end
+end
+
+-- BOTÃO PARA APLICAR
+MainTab:CreateButton({
+	Name = "Apply Points (FAST)",
+	Callback = function()
+
+		task.spawn(function()
+			upgradeAbilityFast(selectedAbility, selectedPoints)
+		end)
+
+		Rayfield:Notify({
+			Title = "Upgrade",
+			Content = "Upgrading "..selectedPoints.." in "..selectedAbility,
+			Duration = 4,
+		})
+
+	end,
+})
+
