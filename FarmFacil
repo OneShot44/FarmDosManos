@@ -133,7 +133,7 @@ local punchRunning = false
 local punchDelay = 3 -- mínimo 3 segundos
 
 local function spamPunch()
-	for i = 1, 10 do
+	for i = 1, 300 do
 		PunchEvent:FireServer(0, 0.1, 1)
 	end
 end
