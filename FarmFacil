@@ -46,9 +46,6 @@ Rayfield:Notify({
    Duration = 4.5,
 })
 
----------------------------------------------------
--- SERVICES
----------------------------------------------------
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -57,9 +54,6 @@ local VirtualUser = game:GetService("VirtualUser")
 
 local player = Players.LocalPlayer
 
----------------------------------------------------
--- ANTI AFK COM NOTIFICAÇÃO
----------------------------------------------------
 
 local VirtualUser = game:GetService("VirtualUser")
 
@@ -74,9 +68,6 @@ Rayfield:Notify({
 	Duration = 4,
 })
 
----------------------------------------------------
--- TELEPORT SYSTEM
----------------------------------------------------
 
 MainTab:CreateSection("Teleport System")
 
@@ -84,9 +75,9 @@ local targetCFrame = CFrame.new(1453, 97.7080002, -2506)
 local teleportConnection
 
 MainTab:CreateToggle({
-   Name = "Infinite Teleport",
+   Name = "Infinite Teleport Puncher",
    CurrentValue = false,
-   Flag = "InfiniteTeleport",
+   Flag = "InfiniteTeleportPuncher",
    Callback = function(Value)
 
       if Value then
@@ -121,16 +112,56 @@ MainTab:CreateToggle({
    end,
 })
 
----------------------------------------------------
--- AUTO RAPID PUNCH
----------------------------------------------------
+local targetCFrame = CFrame.new(1452.97168, 97.9302444, -2504.18457,
+    0.999102056, -2.10803619e-09, -0.0423690304,
+    -1.89739002e-09, 1, -9.44964427e-08,
+    0.0423690304, 9.4414679e-08, 0.999102056)
+local teleportConnection
+
+MainTab:CreateToggle({
+   Name = "Infinite Teleport Tank",
+   CurrentValue = false,
+   Flag = "InfiniteTeleportTank",
+   Callback = function(Value)
+
+      if Value then
+         teleportConnection = RunService.Heartbeat:Connect(function()
+            local character = player.Character
+            if character then
+               local hrp = character:FindFirstChild("HumanoidRootPart")
+               if hrp then
+                  hrp.CFrame = targetCFrame
+               end
+            end
+         end)
+
+         Rayfield:Notify({
+            Title = "Teleport",
+            Content = "Teleport Ativado!",
+            Duration = 3,
+         })
+
+      else
+         if teleportConnection then
+            teleportConnection:Disconnect()
+            teleportConnection = nil
+         end
+
+         Rayfield:Notify({
+            Title = "Teleport",
+            Content = "Teleport Desativado!",
+            Duration = 3,
+         })
+      end
+   end,
+})
 
 MainTab:CreateSection("Combat System")
 
 local PunchEvent = ReplicatedStorage:WaitForChild("Events"):WaitForChild("Punch")
 
 local punchRunning = false
-local punchDelay = 3 -- mínimo 3 segundos
+local punchDelay = 3 
 
 local function spamPunch()
 	for i = 1, 300 do
@@ -138,12 +169,12 @@ local function spamPunch()
 	end
 end
 
--- SLIDER (3 a 30 segundos)
+
 MainTab:CreateSlider({
-	Name = "Punch Delay",
+	Name = "Tempo de soco",
 	Range = {3, 30},
 	Increment = 1,
-	Suffix = "Seconds",
+	Suffix = "Segundos",
 	CurrentValue = 3,
 	Flag = "RapidPunchDelay",
 	Callback = function(Value)
@@ -151,7 +182,7 @@ MainTab:CreateSlider({
 	end,
 })
 
--- TOGGLE AUTO PUNCH
+
 MainTab:CreateToggle({
 	Name = "Auto Rapid Punch",
 	CurrentValue = false,
@@ -169,7 +200,7 @@ MainTab:CreateToggle({
 			end)
 
 			Rayfield:Notify({
-				Title = "Combat",
+				Title = "Combate",
 				Content = "Auto Rapid Punch Ativado!",
 				Duration = 3,
 			})
@@ -183,11 +214,8 @@ MainTab:CreateToggle({
 	end,
 })
 
----------------------------------------------------
--- AUTO UPGRADE SYSTEM (FAST + INPUT)
----------------------------------------------------
 
-MainTab:CreateSection("Auto Upgrade")
+MainTab:CreateSection("Reset de status")
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UpgradeEvent = ReplicatedStorage:WaitForChild("Events"):WaitForChild("UpgradeAbility")
@@ -195,9 +223,9 @@ local UpgradeEvent = ReplicatedStorage:WaitForChild("Events"):WaitForChild("Upgr
 local selectedAbility = "energy"
 local selectedPoints = 1
 
--- DROPDOWN PARA ESCOLHER HABILIDADE
+
 MainTab:CreateDropdown({
-	Name = "Select Ability",
+	Name = "Selecionar habilidade",
 	Options = {"energy","healing","speed","flight","swinging","telekinesis","vitality","metalSkin"},
 	CurrentOption = {"energy"},
 	MultipleOptions = false,
@@ -207,11 +235,11 @@ MainTab:CreateDropdown({
 	end,
 })
 
--- INPUT PARA DIGITAR QUANTIDADE
+
 MainTab:CreateInput({
-	Name = "Amount of Points",
+	Name = "Tanto de ponto",
 	CurrentValue = "",
-	PlaceholderText = "Type exact amount (ex: 50000)",
+	PlaceholderText = "Coloca os pontos q c quiser",
 	RemoveTextAfterFocusLost = false,
 	Flag = "PointsInput",
 	Callback = function(Text)
@@ -219,7 +247,7 @@ MainTab:CreateInput({
 	end,
 })
 
--- FUNÇÃO SUPER RÁPIDA (EM BATCH)
+
 local function upgradeAbilityFast(abilityName, totalIncrements)
 	local incrementsPerRequest = 5000
 	local remaining = totalIncrements
@@ -234,13 +262,13 @@ local function upgradeAbilityFast(abilityName, totalIncrements)
 		end
 
 		remaining -= batch
-		task.wait() -- pequena pausa pra não crashar
+		task.wait()
 	end
 end
 
--- BOTÃO PARA APLICAR
+
 MainTab:CreateButton({
-	Name = "Apply Points (FAST)",
+	Name = "Colocar pontos (rapido, risco de crash)",
 	Callback = function()
 
 		task.spawn(function()
@@ -249,10 +277,9 @@ MainTab:CreateButton({
 
 		Rayfield:Notify({
 			Title = "Upgrade",
-			Content = "Upgrading "..selectedPoints.." in "..selectedAbility,
+			Content = "Colocando "..selectedPoints.." em "..selectedAbility,
 			Duration = 4,
 		})
 
 	end,
 })
-
