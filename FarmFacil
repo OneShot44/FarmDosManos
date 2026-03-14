@@ -68,7 +68,7 @@ Rayfield:Notify({
 	Duration = 4,
 })
 
--- Anti-Fling
+
 local antifling
 
 if antifling then
