@@ -68,6 +68,32 @@ Rayfield:Notify({
 	Duration = 4,
 })
 
+-- Anti-Fling
+local antifling
+
+if antifling then
+    antifling:Disconnect()
+    antifling = nil
+end
+
+antifling = RunService.Stepped:Connect(function()
+    for _, otherPlayer in pairs(Players:GetPlayers()) do
+        if otherPlayer ~= player and otherPlayer.Character then
+            for _, v in pairs(otherPlayer.Character:GetDescendants()) do
+                if v:IsA("BasePart") then
+                    v.CanCollide = false
+                end
+            end
+        end
+    end
+end)
+
+Rayfield:Notify({
+    Title = "Anti fling",
+    Content = "Anti fling Ativado",
+    Duration = 4,
+})
+
 
 MainTab:CreateSection("Teleport System")
 
