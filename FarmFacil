@@ -375,3 +375,73 @@ MainTab:CreateToggle({
 		end
 	end,
 })
+
+MainTab:CreateSection("Teleport System 2")
+
+local targetCFrame = CFrame.new(
+    -913.045776, 120.973961, -2813.47266,
+    0.994958878, -2.14937828e-08, 0.10028401,
+    2.92809226e-08, 1, -7.61789565e-08,
+    -0.10028401, 7.86815584e-08, 0.994958878
+)
+local teleportConnection
+
+MainTab:CreateToggle({
+   Name = "Infinite Teleport Puncher 2",
+   CurrentValue = false,
+   Flag = "InfiniteTeleportPuncher2",
+   Callback = function(Value)
+
+      if Value then
+         teleportConnection = RunService.Heartbeat:Connect(function()
+            local character = player.Character
+            if character then
+               local hrp = character:FindFirstChild("HumanoidRootPart")
+               if hrp then
+                  hrp.CFrame = targetCFrame
+               end
+            end
+         end)
+
+      else
+         if teleportConnection then
+            teleportConnection:Disconnect()
+            teleportConnection = nil
+         end
+      end
+   end,
+})
+
+local targetCFrame = CFrame.new(
+    -913.075378, 120.973961, -2811.08398,
+    1, 0, 0,
+    0, 1, 0,
+    0, 0, 1
+)
+local teleportConnection
+
+MainTab:CreateToggle({
+   Name = "Infinite Teleport Tank 2",
+   CurrentValue = false,
+   Flag = "InfiniteTeleportTank2",
+   Callback = function(Value)
+
+      if Value then
+         teleportConnection = RunService.Heartbeat:Connect(function()
+            local character = player.Character
+            if character then
+               local hrp = character:FindFirstChild("HumanoidRootPart")
+               if hrp then
+                  hrp.CFrame = targetCFrame
+               end
+            end
+         end)
+
+      else
+         if teleportConnection then
+            teleportConnection:Disconnect()
+            teleportConnection = nil
+         end
+      end
+   end,
+})
