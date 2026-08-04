@@ -1,1 +1,447 @@
-.
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+   Name = "Age Of Heroes Farm",
+   Icon = 0,
+   LoadingTitle = "Jooj interface",
+   LoadingSubtitle = "by jooj",
+   ShowText = "Rayfield",
+   Theme = "Default",
+
+   ToggleUIKeybind = "K",
+
+   DisableRayfieldPrompts = false,
+   DisableBuildWarnings = false,
+
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil,
+      FileName = "Big Hub"
+   },
+
+   Discord = {
+      Enabled = false,
+      Invite = "noinvitelink",
+      RememberJoins = true
+   },
+
+   KeySystem = false,
+   KeySettings = {
+      Title = "Untitled",
+      Subtitle = "Key System",
+      Note = "No method of obtaining the key is provided",
+      FileName = "Key",
+      SaveKey = true,
+      GrabKeyFromSite = false,
+      Key = {"Hello"}
+   }
+})
+
+local MainTab = Window:CreateTab("Scripts", 4483362458)
+MainTab:CreateSection("Farming")
+
+Rayfield:Notify({
+   Title = "So kaspa kaspa",
+   Content = "Script dos mano",
+   Duration = 4.5,
+})
+
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local VirtualUser = game:GetService("VirtualUser")
+
+local player = Players.LocalPlayer
+
+
+local VirtualUser = game:GetService("VirtualUser")
+
+player.Idled:Connect(function()
+	VirtualUser:CaptureController()
+	VirtualUser:ClickButton2(Vector2.new(0,0))
+end)
+
+Rayfield:Notify({
+	Title = "Anti-AFK",
+	Content = "Anti Idle Ativado!",
+	Duration = 4,
+})
+
+
+local antifling
+
+if antifling then
+    antifling:Disconnect()
+    antifling = nil
+end
+
+antifling = RunService.Stepped:Connect(function()
+    for _, otherPlayer in pairs(Players:GetPlayers()) do
+        if otherPlayer ~= player and otherPlayer.Character then
+            for _, v in pairs(otherPlayer.Character:GetDescendants()) do
+                if v:IsA("BasePart") then
+                    v.CanCollide = false
+                end
+            end
+        end
+    end
+end)
+
+Rayfield:Notify({
+    Title = "Anti fling",
+    Content = "Anti fling Ativado",
+    Duration = 4,
+})
+
+
+MainTab:CreateSection("Teleport System")
+
+local targetCFrame = CFrame.new(1453, 97.7080002, -2506)
+local teleportConnection
+
+MainTab:CreateToggle({
+   Name = "Infinite Teleport Puncher",
+   CurrentValue = false,
+   Flag = "InfiniteTeleportPuncher",
+   Callback = function(Value)
+
+      if Value then
+         teleportConnection = RunService.Heartbeat:Connect(function()
+            local character = player.Character
+            if character then
+               local hrp = character:FindFirstChild("HumanoidRootPart")
+               if hrp then
+                  hrp.CFrame = targetCFrame
+               end
+            end
+         end)
+
+         Rayfield:Notify({
+            Title = "Teleport",
+            Content = "Teleport Ativado!",
+            Duration = 3,
+         })
+
+      else
+         if teleportConnection then
+            teleportConnection:Disconnect()
+            teleportConnection = nil
+         end
+
+         Rayfield:Notify({
+            Title = "Teleport",
+            Content = "Teleport Desativado!",
+            Duration = 3,
+         })
+      end
+   end,
+})
+
+local targetCFrame = CFrame.new(1452.97168, 97.9302444, -2504.18457,
+    0.999102056, -2.10803619e-09, -0.0423690304,
+    -1.89739002e-09, 1, -9.44964427e-08,
+    0.0423690304, 9.4414679e-08, 0.999102056)
+local teleportConnection
+
+MainTab:CreateToggle({
+   Name = "Infinite Teleport Tank",
+   CurrentValue = false,
+   Flag = "InfiniteTeleportTank",
+   Callback = function(Value)
+
+      if Value then
+         teleportConnection = RunService.Heartbeat:Connect(function()
+            local character = player.Character
+            if character then
+               local hrp = character:FindFirstChild("HumanoidRootPart")
+               if hrp then
+                  hrp.CFrame = targetCFrame
+               end
+            end
+         end)
+
+         Rayfield:Notify({
+            Title = "Teleport",
+            Content = "Teleport Ativado!",
+            Duration = 3,
+         })
+
+      else
+         if teleportConnection then
+            teleportConnection:Disconnect()
+            teleportConnection = nil
+         end
+
+         Rayfield:Notify({
+            Title = "Teleport",
+            Content = "Teleport Desativado!",
+            Duration = 3,
+         })
+      end
+   end,
+})
+
+MainTab:CreateSection("Combat System")
+
+local PunchEvent = ReplicatedStorage:WaitForChild("Events"):WaitForChild("Punch")
+
+local punchRunning = false
+local punchDelay = 3 
+
+local function spamPunch()
+	for i = 1, 300 do
+		PunchEvent:FireServer(0, 0.1, 1)
+	end
+end
+
+
+MainTab:CreateSlider({
+	Name = "Tempo de soco",
+	Range = {3, 30},
+	Increment = 1,
+	Suffix = "Segundos",
+	CurrentValue = 3,
+	Flag = "RapidPunchDelay",
+	Callback = function(Value)
+		punchDelay = Value
+	end,
+})
+
+
+MainTab:CreateToggle({
+	Name = "Auto Rapid Punch",
+	CurrentValue = false,
+	Flag = "AutoRapidPunch",
+	Callback = function(Value)
+
+		punchRunning = Value
+
+		if punchRunning then
+			task.spawn(function()
+				while punchRunning do
+					spamPunch()
+					task.wait(punchDelay)
+				end
+			end)
+
+			Rayfield:Notify({
+				Title = "Combate",
+				Content = "Auto Rapid Punch Ativado!",
+				Duration = 3,
+			})
+		else
+			Rayfield:Notify({
+				Title = "Combat",
+				Content = "Auto Rapid Punch Desativado!",
+				Duration = 3,
+			})
+		end
+	end,
+})
+
+
+MainTab:CreateSection("Reset de status")
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UpgradeEvent = ReplicatedStorage:WaitForChild("Events"):WaitForChild("UpgradeAbility")
+
+local selectedAbility = "energy"
+local selectedPoints = 1
+
+
+MainTab:CreateDropdown({
+	Name = "Selecionar habilidade",
+	Options = {"energy","healing","speed","flight","swinging","telekinesis","vitality","metalSkin"},
+	CurrentOption = {"energy"},
+	MultipleOptions = false,
+	Flag = "AbilitySelect",
+	Callback = function(Options)
+		selectedAbility = Options[1]
+	end,
+})
+
+
+MainTab:CreateInput({
+	Name = "Tanto de ponto",
+	CurrentValue = "",
+	PlaceholderText = "Coloca os pontos q c quiser",
+	RemoveTextAfterFocusLost = false,
+	Flag = "PointsInput",
+	Callback = function(Text)
+		selectedPoints = tonumber(Text) or 1
+	end,
+})
+
+
+local function upgradeAbilityFast(abilityName, totalIncrements)
+	local incrementsPerRequest = 5000
+	local remaining = totalIncrements
+
+	while remaining > 0 do
+		local batch = math.min(incrementsPerRequest, remaining)
+
+		for i = 1, batch do
+			task.spawn(function()
+				UpgradeEvent:InvokeServer(abilityName)
+			end)
+		end
+
+		remaining -= batch
+		task.wait()
+	end
+end
+
+
+MainTab:CreateButton({
+	Name = "Colocar pontos (rapido, risco de crash)",
+	Callback = function()
+
+		task.spawn(function()
+			upgradeAbilityFast(selectedAbility, selectedPoints)
+		end)
+
+		Rayfield:Notify({
+			Title = "Upgrade",
+			Content = "Colocando "..selectedPoints.." em "..selectedAbility,
+			Duration = 4,
+		})
+
+	end,
+})
+
+MainTab:CreateToggle({
+	Name = "Ultra graficos baixos (Anti lag)",
+	CurrentValue = false,
+	Callback = function(Value)
+
+		local Lighting = game:GetService("Lighting")
+		local Workspace = game:GetService("Workspace")
+
+		if Value then
+
+			pcall(function()
+				settings().Rendering.QualityLevel = 1
+			end)
+
+			Lighting.GlobalShadows = false
+			Lighting.FogEnd = 1e10
+			Lighting.Brightness = 1
+			Lighting.EnvironmentDiffuseScale = 0
+			Lighting.EnvironmentSpecularScale = 0
+
+
+			for _, v in ipairs(Lighting:GetChildren()) do
+				if v:IsA("PostEffect") then
+					v.Enabled = false
+				end
+			end
+
+
+			local terrain = Workspace:FindFirstChildOfClass("Terrain")
+			if terrain then
+				terrain.WaterWaveSize = 0
+				terrain.WaterWaveSpeed = 0
+				terrain.WaterReflectance = 0
+				terrain.WaterTransparency = 1
+			end
+
+
+			for _, v in ipairs(Workspace:GetDescendants()) do
+				if v:IsA("ParticleEmitter") then
+					v.Rate = 0
+				elseif v:IsA("Trail") then
+					v.Enabled = false
+				elseif v:IsA("Beam") then
+					v.Enabled = false
+				elseif v:IsA("Smoke") then
+					v.Enabled = false
+				elseif v:IsA("Fire") then
+					v.Enabled = false
+				elseif v:IsA("Decal") or v:IsA("Texture") then
+					v.Transparency = 1
+				end
+			end
+
+			Workspace.StreamingEnabled = true
+
+		else
+
+			Rayfield:Notify({
+				Title = "Anti-Lag",
+				Content = "Rejoin para restaurar grÃ¡ficos normais",
+				Duration = 4,
+			})
+		end
+	end,
+})
+
+MainTab:CreateSection("Teleport System 2")
+
+local targetCFrame = CFrame.new(
+    -913.045776, 120.973961, -2813.47266,
+    0.994958878, -2.14937828e-08, 0.10028401,
+    2.92809226e-08, 1, -7.61789565e-08,
+    -0.10028401, 7.86815584e-08, 0.994958878
+)
+local teleportConnection
+
+MainTab:CreateToggle({
+   Name = "Infinite Teleport Puncher 2",
+   CurrentValue = false,
+   Flag = "InfiniteTeleportPuncher2",
+   Callback = function(Value)
+
+      if Value then
+         teleportConnection = RunService.Heartbeat:Connect(function()
+            local character = player.Character
+            if character then
+               local hrp = character:FindFirstChild("HumanoidRootPart")
+               if hrp then
+                  hrp.CFrame = targetCFrame
+               end
+            end
+         end)
+
+      else
+         if teleportConnection then
+            teleportConnection:Disconnect()
+            teleportConnection = nil
+         end
+      end
+   end,
+})
+
+local targetCFrame = CFrame.new(
+    -913.075378, 120.973961, -2811.08398,
+    1, 0, 0,
+    0, 1, 0,
+    0, 0, 1
+)
+local teleportConnection
+
+MainTab:CreateToggle({
+   Name = "Infinite Teleport Tank 2",
+   CurrentValue = false,
+   Flag = "InfiniteTeleportTank2",
+   Callback = function(Value)
+
+      if Value then
+         teleportConnection = RunService.Heartbeat:Connect(function()
+            local character = player.Character
+            if character then
+               local hrp = character:FindFirstChild("HumanoidRootPart")
+               if hrp then
+                  hrp.CFrame = targetCFrame
+               end
+            end
+         end)
+
+      else
+         if teleportConnection then
+            teleportConnection:Disconnect()
+            teleportConnection = nil
+         end
+      end
+   end,
+})
